@@ -1,3 +1,64 @@
+## 🚨 CRITICAL DEVELOPMENT RULES - ALWAYS FOLLOW
+
+1. **Run tests after EVERY change**: Always run linting and type checking after any code modification
+   - For projects with scripts: `npm run lint && npm run typecheck` or `bun run lint && bun run typecheck`
+   - If no typecheck script exists, use: `tsc --noEmit` or add it to package.json
+2. **NEVER use type assertions**: No `as Type` ever - refactor code structure if needed
+3. **NEVER use 'any' type**: Always use proper TypeScript types
+4. **Avoid code duplication**: Create reusable shared components
+   - Extract common UI patterns into shared components
+   - Use composition over duplication
+   - Place shared components in appropriate shared folders
+5. **Match existing UI patterns**: Study and follow each project's design system
+   - Check similar components for styling patterns
+   - Maintain consistent spacing, colors, hover states
+   - Follow established card designs and layouts
+
+## General Best Practices
+
+1. **Always use Server Actions for data mutations** (Next.js projects)
+   - Never mutate data directly in client components
+   - Use server actions for all database operations
+   - Return properly typed responses
+
+2. **Never expose sensitive data** in client components
+   - Keep API keys, secrets, and sensitive logic server-side
+   - Sanitize data before sending to client
+
+3. **Keep dependencies updated** regularly
+   - Check for security vulnerabilities
+   - Update incrementally to avoid breaking changes
+
+4. **Document complex logic** with comments
+   - Explain "why" not "what"
+   - Document business logic and edge cases
+
+5. **Use meaningful commit messages**
+   - Follow conventional commits when applicable
+   - Include context and reasoning for changes
+
+6. **Validate all user inputs**
+   - Never trust client-side data
+   - Use validation libraries (Zod when available)
+   - Validate at the server boundary
+
+7. **Handle all error states** gracefully
+   - Provide user-friendly error messages
+   - Log errors appropriately
+   - Never expose internal errors to users
+
+8. **Clean up unused code**
+   - Remove unused imports immediately
+   - Delete commented code unless it's documentation
+   - Remove unused parameters and variables
+   - Keep components lean and focused
+
+9. **Move Prisma to Server Actions** (Next.js + Prisma projects)
+   - Never use Prisma in client components
+   - Create organized action files by domain
+   - Handle errors with try-catch blocks
+   - Return typed responses
+
 ## Environment Awareness
 - Remember globally that you are working on WSL (Windows Subsystem for Linux)
 
