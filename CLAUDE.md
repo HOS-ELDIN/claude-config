@@ -13,3 +13,11 @@
   4. Windows copies are only for reference (pull from remote if needed)
 - **Never** develop in `/mnt/` paths - always use native WSL paths
 - **Project Structure**: `/home/hossam/projects/<project-name>/`
+
+## Claude Configuration Sync
+- **Configuration Repository**: `~/projects/claude-config` contains my global memory and workflow docs
+- **Auto-sync Rule**: Whenever my global memory (this file) is updated, I must:
+  1. Copy the updated file to `~/projects/claude-config/CLAUDE.md`
+  2. Commit the changes with a descriptive message
+  3. Push to the remote repository
+  4. This ensures configuration consistency across all devices
