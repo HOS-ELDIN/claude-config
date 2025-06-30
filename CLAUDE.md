@@ -21,3 +21,36 @@
   2. Commit the changes with a descriptive message
   3. Push to the remote repository
   4. This ensures configuration consistency across all devices
+
+## Session Management Commands
+- **Purpose**: Track and document development sessions for better context preservation
+- **Commands Directory**: `~/projects/claude-config/commands/` contains session management commands
+- **Sessions Directory**: `~/projects/claude-config/sessions/` stores session documentation
+
+### Available Commands
+1. **Start Session**: `/project:session-start [optional-name]`
+   - Creates a new timestamped session file
+   - Initializes session tracking with goals and context
+   - Records starting git status
+
+2. **Update Session**: `/project:session-update [optional-notes]`
+   - Adds timestamped progress updates to current session
+   - Tracks git changes and todo status
+   - Documents ongoing work and decisions
+
+3. **End Session**: `/project:session-end`
+   - Generates comprehensive session summary
+   - Documents final git status and changes
+   - Clears active session tracker
+
+### Session Workflow
+1. Start each development session with `/project:session-start`
+2. Periodically update progress with `/project:session-update`
+3. End sessions with `/project:session-end` to create summary
+4. Session files provide context for future work
+
+### Benefits
+- Maintains context between Claude conversations
+- Documents decision-making process
+- Tracks progress systematically
+- Enables knowledge transfer across sessions

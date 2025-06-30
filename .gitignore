@@ -1,0 +1,6 @@
+# Session files (contain project-specific data)
+sessions/
+!sessions/.current-session
+
+# Keep the .current-session file but ignore its contents
+sessions/.current-session
