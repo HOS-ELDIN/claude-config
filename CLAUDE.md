@@ -13,6 +13,13 @@
    - Check similar components for styling patterns
    - Maintain consistent spacing, colors, hover states
    - Follow established card designs and layouts
+6. **Use smaller separate components**: Always break down large components for better maintainability
+   - Each component should have a single responsibility
+   - Extract complex logic into custom hooks
+   - Keep components under 200 lines when possible
+   - Create sub-components for repeated UI patterns
+   - Separate concerns: presentation, logic, and data fetching
+   - Use descriptive component names that reflect their purpose
 
 ## General Best Practices
 
@@ -58,6 +65,28 @@
    - Create organized action files by domain
    - Handle errors with try-catch blocks
    - Return typed responses
+
+10. **Encapsulate related logic into single functions**
+   - When you have related code (constants, transformations, configurations), put them inside a single function
+   - The function should return everything needed, fully prepared for use
+   - This makes components cleaner and more readable by removing setup logic
+   - Example: Instead of having STATUS_ICONS constant and transformation logic in component, create `getViewStatusConfigWithIcons()` that encapsulates all of it
+   - Benefits:
+     - Components focus on their primary purpose
+     - Related logic stays together
+     - Easier to test and reuse
+     - Reduces cognitive load when reading components
+
+11. **Never pass components as props**
+   - Don't pass React components as props unless absolutely necessary
+   - Instead, import components directly where they're used and conditionally render based on props
+   - Example: Instead of `<Component HeaderComponent={ClientHeader} />`, do the import inside Component and render `{viewType === 'client' ? <ClientHeader /> : <ServerHeader />}`
+   - Benefits:
+     - Better tree shaking and code splitting
+     - Clearer component dependencies
+     - Easier to understand component structure
+     - Avoids complex prop typing for components
+     - Better for performance optimization
 
 ## Environment Awareness
 - Remember globally that you are working on WSL (Windows Subsystem for Linux)
