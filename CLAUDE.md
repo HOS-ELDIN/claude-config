@@ -3,6 +3,7 @@
 1. **Run tests after EVERY change**: Always run linting and type checking after any code modification
    - For projects with scripts: `npm run lint && npm run typecheck` or `bun run lint && bun run typecheck`
    - If no typecheck script exists, use: `tsc --noEmit` or add it to package.json
+   - **NEVER run `npm run dev` or start development servers** - focus on code changes only
 2. **NEVER use type assertions**: No `as Type` ever - refactor code structure if needed
 3. **NEVER use 'any' type**: Always use proper TypeScript types
 4. **Avoid code duplication**: Create reusable shared components
