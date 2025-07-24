@@ -1,5 +1,19 @@
 ## 🚨 CRITICAL DEVELOPMENT RULES - ALWAYS FOLLOW
 
+### React/Next.js Specific Rules
+1. **React Hook Dependencies**: When useEffect shows dependency warnings, add `// eslint-disable-next-line react-hooks/exhaustive-deps` comment instead of adding functions to dependency array (which can cause infinite loops)
+2. **Next.js Image Optimization**: Always use `next/image` component instead of HTML `<img>` tags. Convert with proper width/height props:
+   ```tsx
+   // Bad
+   <img src={url} alt={alt} className="..." />
+   
+   // Good
+   import Image from 'next/image'
+   <Image src={url} alt={alt} width={1000} height={1000} className="..." />
+   ```
+
+## 🚨 CRITICAL DEVELOPMENT RULES - ALWAYS FOLLOW
+
 1. **Run tests after EVERY change**: Always run linting and type checking after any code modification
    - For projects with scripts: `npm run lint && npm run typecheck` or `bun run lint && bun run typecheck`
    - If no typecheck script exists, use: `tsc --noEmit` or add it to package.json
