@@ -103,6 +103,48 @@
      - Avoids complex prop typing for components
      - Better for performance optimization
 
+## Admin Table Design System Patterns
+
+### Badge Styling Pattern
+- **Always use `variant="secondary"`** with purple theme for data badges:
+  ```tsx
+  <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200">
+  ```
+- **Never use `variant="outline"`** for data display (only for special states)
+- **Add `text-xs`** for smaller badges (counts, metadata)
+
+### Badge Usage Rules
+1. **Numeric values** (counts, orders): Always display in badges, never plain text
+2. **Boolean/Status values**: Use checkmark badge `✓` instead of text
+3. **Categories/Types**: Use colored badges with consistent theming
+4. **Missing data**: Use `<span className="text-muted-foreground">-</span>`
+
+### Multi-Value Display Pattern (sectors, tags, etc.)
+```tsx
+// Show first 2 items + overflow count
+<div className="flex flex-wrap gap-1 max-w-xs">
+  {items.slice(0, 2).map(item => (
+    <Badge key={item.id} variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 text-xs">
+      {item.nameAr || item.name}
+    </Badge>
+  ))}
+  {items.length > 2 && (
+    <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 text-xs">
+      +{items.length - 2}
+    </Badge>
+  )}
+</div>
+```
+
+### Delete Confirmation Pattern
+- **Always use shared component**: `DeleteConfirmDialog`
+- **State pattern**:
+  ```tsx
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState<Type | null>(null)
+  ```
+- **Never use inline confirmations** or custom AlertDialog implementations
+
 ## Environment Awareness
 - Remember globally that you are working on WSL (Windows Subsystem for Linux)
 
@@ -159,56 +201,3 @@
 - Documents decision-making process
 - Tracks progress systematically
 - Enables knowledge transfer across sessions
-
-## Recent Development Sessions
-
-### Today's Session Summary (2025-08-21) - Daleel Landing Project
-
-#### Major Accomplishments:
-
-1. **Fixed Key Source Data Display**:
-   - Removed pageId and language filtering from getKeySourceData function
-   - Removed language field from KeySourceData model in Prisma schema
-   - Updated all related API routes and seed data
-
-2. **Refactored Seed Data to Remove Legacy ID Dependencies**:
-   - Converted all seed data relationships from legacy IDs to slugs
-   - Updated segments.json, segment-content.json, and segment-enablers-full.json
-   - Modified seed script to use slug-based lookups instead of legacy IDs
-   - Successfully tested new seeding approach
-
-3. **Cleaned Up Scripts Folder**:
-   - Organized scripts into logical directories:
-     - `/production` - Active scripts (seed-production-json.ts, fetch-all-wp-data.ts)
-     - `/setup` - Setup scripts
-     - `/docs` - All documentation
-     - `/archive` - One-time migration scripts
-   - Updated package.json to point to new seed script location
-
-4. **Converted Market Insight Page from Tabs to Report Style**:
-   - Removed tab navigation interface
-   - Created MarketInsightReport component with continuous scrolling sections
-   - Removed table of contents as requested
-   - Removed show more/less functionality - all content now displays in full
-   - Applied modern styling with purple theme accents
-
-#### Current State:
-- Database schema uses UUIDs and slugs (no legacy ID dependencies in relationships)
-- All seed data successfully migrated to slug-based approach
-- Scripts folder is clean and organized
-- Market insight pages display as modern reports instead of tabs
-- Build passes without errors
-
-#### Files Modified Today:
-- `/src/actions/daleel.ts` - Removed pageId and language filtering
-- `/src/app/api/daleel/key_source_for_data/route.ts` - Removed language filter
-- `/prisma/schema.prisma` - Removed language field from KeySourceData
-- `/scripts/seed-production-json.ts` - Updated to use slug lookups
-- `/src/components/pages/market-insight/MarketInsightReport.tsx` - New report component
-- `/src/components/pages/market-insight/MarketInsightDetail.tsx` - Updated to use report
-- Various seed JSON files - Converted to use slugs
-
-#### Next Steps:
-- Continue with any remaining UI/UX improvements
-- Test mobile responsiveness of new report layout
-- Consider adding print-friendly styles for market insight reports
