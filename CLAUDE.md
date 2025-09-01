@@ -12,6 +12,69 @@
    <Image src={url} alt={alt} width={1000} height={1000} className="..." />
    ```
 
+### Form Implementation Pattern (REQUIRED)
+All forms MUST be implemented using react-hook-form with Zod validation following this exact pattern:
+
+1. **Schema Definition**: Create a separate schema file in `src/schemas/[feature]/` directory:
+   ```typescript
+   import { z } from 'zod'
+   
+   export const myFormSchema = z.object({
+     name: z.string().min(1, 'Name is required'),
+     email: z.string().email('Invalid email'),
+     // ... other fields
+   })
+   
+   export type MyFormData = z.infer<typeof myFormSchema>
+   ```
+
+2. **Form Component**: Use react-hook-form with zodResolver:
+   ```typescript
+   import { useForm } from 'react-hook-form'
+   import { zodResolver } from '@hookform/resolvers/zod'
+   import { myFormSchema, type MyFormData } from '~/schemas/feature/my-form.schema'
+   import { toast } from 'sonner'
+   
+   const form = useForm<MyFormData>({
+     resolver: zodResolver(myFormSchema),
+     defaultValues: {
+       // ... default values
+     }
+   })
+   
+   const { register, formState: { errors }, setValue, watch, handleSubmit } = form
+   ```
+
+3. **Server Actions**: Import and reuse the same schema:
+   ```typescript
+   import { myFormSchema, type MyFormData } from '~/schemas/feature/my-form.schema'
+   
+   export async function createItem(data: MyFormData) {
+     const validatedData = myFormSchema.parse(data)
+     // ... rest of implementation
+   }
+   ```
+
+4. **Error Handling**: Use toast notifications, never use alert():
+   ```typescript
+   toast.success('Item created successfully')
+   toast.error('Failed to create item')
+   ```
+
+5. **Field Error Display**: Show validation errors for each field:
+   ```typescript
+   {errors.fieldName && (
+     <p className="text-sm text-red-500 mt-1">{errors.fieldName.message}</p>
+   )}
+   ```
+
+6. **Required Fields**: Mark required fields with red asterisk:
+   ```typescript
+   <Label>Field Name <span className="text-red-500">*</span></Label>
+   ```
+
+This pattern ensures consistent validation, type safety, and user experience across all forms.
+
 ## 🚨 CRITICAL DEVELOPMENT RULES - ALWAYS FOLLOW
 
 1. **Run tests after EVERY change**: Always run linting and type checking after any code modification
