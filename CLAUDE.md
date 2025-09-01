@@ -61,12 +61,31 @@ All forms MUST be implemented using react-hook-form with Zod validation followin
    toast.error('Failed to create item')
    ```
 
-5. **Field Error Display**: Show validation errors for each field:
-   ```typescript
-   {errors.fieldName && (
-     <p className="text-sm text-red-500 mt-1">{errors.fieldName.message}</p>
-   )}
-   ```
+5. **Field Error Display**: 
+   - When using custom inputs or shadcn/ui components without Form wrapper:
+     ```typescript
+     {errors.fieldName && (
+       <p className="text-sm text-red-500 mt-1">{errors.fieldName.message}</p>
+     )}
+     ```
+   - When using shadcn/ui Form components (preferred for complex forms):
+     ```typescript
+     <Form {...form}>
+       <FormField
+         control={form.control}
+         name="fieldName"
+         render={({ field }) => (
+           <FormItem>
+             <FormLabel>Field Name <span className="text-red-500">*</span></FormLabel>
+             <FormControl>
+               <Input {...field} />
+             </FormControl>
+             <FormMessage /> {/* Automatically shows errors */}
+           </FormItem>
+         )}
+       />
+     </Form>
+     ```
 
 6. **Required Fields**: Mark required fields with red asterisk:
    ```typescript
@@ -165,6 +184,69 @@ This pattern ensures consistent validation, type safety, and user experience acr
      - Easier to understand component structure
      - Avoids complex prop typing for components
      - Better for performance optimization
+
+## Arabic/English Field Validation Pattern
+
+### Critical Rules for Bilingual Fields
+All forms with Arabic/English field pairs MUST follow these rules:
+
+1. **Prisma Schema Consistency**: Arabic and English fields MUST have the same optionality
+   ```prisma
+   // ✅ CORRECT - Both required
+   model Entity {
+     name      String
+     nameAr    String
+   }
+   
+   // ✅ CORRECT - Both optional  
+   model Entity {
+     description   String?
+     descriptionAr String?
+   }
+   
+   // ❌ WRONG - Mixed optionality
+   model Entity {
+     description   String   // Required
+     descriptionAr String?  // Optional - THIS IS WRONG!
+   }
+   ```
+
+2. **Optional Field Validation**: If one language is provided, the other MUST be provided
+   - Frontend: Use `crossValidate={true}` on MultiLangInput components
+   - Backend: Use `createArEnValidation()` helper from `~/lib/validation-helpers`
+   - Error message: "يجب إدخال النص بالعربية والإنجليزية معاً أو تركهما فارغين"
+
+3. **Implementation Example**:
+   ```typescript
+   // Frontend - MultiLangInput with cross-validation
+   <MultiLangInput
+     label="الوصف"
+     name="description"
+     nameAr="descriptionAr"
+     value={watch('description') || ''}
+     valueAr={watch('descriptionAr') || ''}
+     onChange={(name, value) => setValue(name as keyof FormData, value)}
+     crossValidate={true} // REQUIRED for optional fields
+   />
+   
+   // Backend - Zod schema with validation
+   import { createArEnValidation } from '~/lib/validation-helpers'
+   
+   const schema = z.object({
+     title: z.string().min(1, 'العنوان بالإنجليزية مطلوب'),
+     titleAr: z.string().min(1, 'العنوان بالعربية مطلوب'),
+     description: z.string().optional(),
+     descriptionAr: z.string().optional(),
+   }).refine(
+     createArEnValidation([
+       { en: 'description', ar: 'descriptionAr' }
+     ]),
+     {
+       message: "يجب إدخال النص بالعربية والإنجليزية معاً أو تركهما فارغين",
+       path: ["descriptionAr"],
+     }
+   )
+   ```
 
 ## Admin Table Design System Patterns
 
