@@ -314,6 +314,74 @@ All forms with Arabic/English field pairs MUST follow these rules:
   3. Push to the remote repository
   4. This ensures configuration consistency across all devices
 
+## Notification Hooks Configuration
+- **Purpose**: Audio notifications for Claude Code events using PowerShell beeps on WSL
+- **Configuration**: Added to `~/.claude/settings.json` for system-wide notifications
+
+### Hook Types
+1. **PreToolUse**: Plays 3 ascending beeps (500Hz, 700Hz, 900Hz) when tools require approval
+2. **PostToolUse**: Single beep (600Hz) after TodoWrite tool usage
+3. **Stop**: Two-tone notification (1000Hz, 1500Hz) when tasks complete
+4. **SubagentStop**: Short beep (800Hz) when subagents finish
+
+### Configuration Example
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -c '[Console]::Beep(1000, 500); [Console]::Beep(1500, 300)' 2>/dev/null || echo 'Task completed!'"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -c '[Console]::Beep(800, 200)' 2>/dev/null"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "TodoWrite",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -c '[Console]::Beep(600, 100)' 2>/dev/null"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "powershell.exe -c '[Console]::Beep(500, 300); [Console]::Beep(700, 300); [Console]::Beep(900, 300)' 2>/dev/null || echo 'Tool approval required'"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Benefits
+- Immediate audio feedback for tool approval requests
+- Distinct sounds for different events
+- Non-intrusive fallback messages if PowerShell unavailable
+- Works seamlessly with WSL environment
+
 ## Session Management Commands
 - **Purpose**: Track and document development sessions for better context preservation
 - **Commands Directory**: `~/projects/claude-config/commands/` contains session management commands
