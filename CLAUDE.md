@@ -314,74 +314,6 @@ All forms with Arabic/English field pairs MUST follow these rules:
   3. Push to the remote repository
   4. This ensures configuration consistency across all devices
 
-## Notification Hooks Configuration
-- **Purpose**: Audio notifications for Claude Code events using PowerShell beeps on WSL
-- **Configuration**: Added to `~/.claude/settings.json` for system-wide notifications
-
-### Hook Types
-1. **PreToolUse**: Plays 3 ascending beeps (500Hz, 700Hz, 900Hz) when tools require approval
-2. **PostToolUse**: Single beep (600Hz) after TodoWrite tool usage
-3. **Stop**: Two-tone notification (1000Hz, 1500Hz) when tasks complete
-4. **SubagentStop**: Short beep (800Hz) when subagents finish
-
-### Configuration Example
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell.exe -c '[Console]::Beep(1000, 500); [Console]::Beep(1500, 300)' 2>/dev/null || echo 'Task completed!'"
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell.exe -c '[Console]::Beep(800, 200)' 2>/dev/null"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "TodoWrite",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell.exe -c '[Console]::Beep(600, 100)' 2>/dev/null"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command", 
-            "command": "powershell.exe -c '[Console]::Beep(500, 300); [Console]::Beep(700, 300); [Console]::Beep(900, 300)' 2>/dev/null || echo 'Tool approval required'"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### Benefits
-- Immediate audio feedback for tool approval requests
-- Distinct sounds for different events
-- Non-intrusive fallback messages if PowerShell unavailable
-- Works seamlessly with WSL environment
-
 ## Session Management Commands
 - **Purpose**: Track and document development sessions for better context preservation
 - **Commands Directory**: `~/projects/claude-config/commands/` contains session management commands
@@ -414,3 +346,54 @@ All forms with Arabic/English field pairs MUST follow these rules:
 - Documents decision-making process
 - Tracks progress systematically
 - Enables knowledge transfer across sessions
+
+## Execution Plan Adherence Rules
+
+### CRITICAL: When given an execution plan or step-by-step instructions:
+
+1. **Follow it step-by-step WITHOUT deviation**
+   - Treat the plan as a contract that must be fulfilled completely
+   - Do not stop until ALL steps are executed
+   - Do not make assumptions or "improvements"
+
+2. **Use TodoWrite to track EVERY step**
+   - Break down the plan into granular todos immediately
+   - Mark items as "in_progress" BEFORE starting each step
+   - Don't mark complete until ACTUALLY complete
+   - For multi-item tasks (e.g., 93 translation chunks), create individual todos
+
+3. **Verify completion at each checkpoint**
+   ```
+   ✓ Did I complete what the plan said?
+   ✓ Am I moving to the correct next step?
+   ✓ Am I still following the plan, not my assumptions?
+   ```
+
+4. **Read for the ACTION verb**
+   - If plan says "Translate" → Actually translate
+   - If plan says "Validate" → Actually validate
+   - If plan says "Import" → Actually import
+   - DO the action specified, not something else
+
+5. **No premature summaries or stopping**
+   - Don't present "completion" summaries until task is ACTUALLY complete
+   - A setup phase is not completion
+   - Empty deliverables are not deliverables
+   - Continue working until all steps are done
+
+6. **When encountering empty fields or data**
+   - Empty fields often mean "fill me" not "find the data elsewhere"
+   - The plan would specify if data exists elsewhere
+   - Trust the plan's context and instructions
+
+7. **Self-check before ANY stopping point**
+   - "Did I do the core task?" (If translation → Did I translate?)
+   - "Can the user use my output?" (If empty → NO)
+   - "Did I follow every step?" (If on step 4 of 8 → NO)
+
+8. **If something seems wrong**
+   - ASK the user rather than improvise
+   - Don't deviate based on assumptions
+   - The plan is authoritative unless user says otherwise
+
+**Key Pattern**: When given a structured plan, become a deterministic executor, not an interpretive agent. The plan is the algorithm - run it completely to termination.
