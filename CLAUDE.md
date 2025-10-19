@@ -97,7 +97,10 @@ This pattern ensures consistent validation, type safety, and user experience acr
 ## 🚨 CRITICAL DEVELOPMENT RULES - ALWAYS FOLLOW
 
 1. **Run tests after EVERY change**: Always run linting and type checking after any code modification
-   - For projects with scripts: `npm run lint && npm run typecheck` or `bun run lint && bun run typecheck`
+   - **Use fast validation tools for iterative development**:
+     - Type checking: `tsc --noEmit` (fast, no build overhead)
+     - Linting: `bun run lint` or `npm run lint` (fast)
+   - **Only use `bun run build` for major changes** (slow, full production build)
    - If no typecheck script exists, use: `tsc --noEmit` or add it to package.json
    - **NEVER run `npm run dev` or start development servers** - focus on code changes only
 2. **NEVER use type assertions**: No `as Type` ever - refactor code structure if needed
