@@ -40,6 +40,8 @@ chmod +x ~/.claude/scripts/statusline.sh
 
 ### 2. Configure Claude Code
 
+#### For WSL Claude Code
+
 Add to `~/.claude/settings.json`:
 
 ```json
@@ -50,6 +52,21 @@ Add to `~/.claude/settings.json`:
   }
 }
 ```
+
+#### For Windows Claude Code
+
+Add to `C:\Users\Hossam eldin\.claude\settings.json`:
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "wsl bash /home/hossam/.claude/scripts/statusline.sh"
+  }
+}
+```
+
+**Note:** The Windows version calls the WSL script via `wsl bash` command, so the script only needs to exist in WSL once.
 
 Or if the file already exists, just add the `statusLine` section.
 
