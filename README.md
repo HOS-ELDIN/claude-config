@@ -14,11 +14,14 @@ When starting Claude in a new project:
 ```
 claude-config/
 ├── CLAUDE.md                    # Core configuration and memory
+├── STATUSLINE-SETUP.md          # Custom statusline documentation
 ├── WSL-DEVELOPMENT-WORKFLOW.md  # WSL-specific development guidelines
 ├── commands/                    # Session management commands
 │   ├── session-start.md        # Start development session
 │   ├── session-update.md       # Update session progress
 │   └── session-end.md          # End session with summary
+├── scripts/                     # Utility scripts
+│   └── statusline.sh           # Custom statusline script
 ├── sessions/                    # Session documentation storage
 │   └── .current-session        # Active session tracker
 └── setup.sh                    # Automatic setup script
@@ -115,6 +118,11 @@ Claude will make these commands available:
 - Track development progress
 - Document decisions and changes
 - Maintain context between sessions
+
+✅ **Custom Statusline**
+- Colorful statusline matching Oh My Posh theme
+- Shows: WSL icon | project | git branch | model | time
+- See `STATUSLINE-SETUP.md` for installation
 
 ✅ **Auto-sync Rules**
 - Keep global and repo configs in sync
