@@ -22,7 +22,16 @@ model=$(echo "$input" | grep -o '"display_name"[[:space:]]*:[[:space:]]*"[^"]*"'
 
 # Get project name (basename of cwd)
 if [ -n "$cwd" ]; then
-    project_name=$(basename "$cwd")
+    # Handle Windows paths (C:\Users\... or C:\\Users\\...)
+    if [[ "$cwd" =~ ^[A-Z]:[/\\] ]]; then
+        # Remove escaped backslashes and convert to forward slashes
+        cwd_clean=$(echo "$cwd" | sed 's/\\\\/\//g' | sed 's/\\/\//g')
+        # Extract last component (project name)
+        project_name=$(basename "$cwd_clean")
+    else
+        # Unix path
+        project_name=$(basename "$cwd")
+    fi
 else
     project_name="~"
 fi
@@ -38,15 +47,19 @@ RESET=$'\e[0m'
 
 # Nerd Font icons from Oh My Posh theme
 COMPUTER_ICON=$'\ue73a'            # Computer/terminal icon
+WINDOWS_ICON=$'\uf17a'            # Windows icon
 GIT_ICON=$'\ue0a0'                # Git branch icon
 TIME_ICON=$'\uf017'               # Clock icon
 
-# Detect WSL vs Windows for icon
-if grep -qi microsoft /proc/version 2>/dev/null || [ -f /proc/sys/fs/binfmt_misc/WSLInterop ]; then
+# Detect if called from Windows (check if cwd is Windows path)
+if [[ "$cwd" =~ ^[A-Z]:[/\\] ]]; then
+    # Windows path detected - use Windows icon
+    icon="$WINDOWS_ICON"
+elif grep -qi microsoft /proc/version 2>/dev/null || [ -f /proc/sys/fs/binfmt_misc/WSLInterop ]; then
     # WSL - use computer icon
     icon="$COMPUTER_ICON"
 else
-    # Windows or other
+    # Other Linux
     icon="$COMPUTER_ICON"
 fi
 
