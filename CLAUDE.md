@@ -1,5 +1,14 @@
 ## 🚨 CRITICAL DEVELOPMENT RULES - ALWAYS FOLLOW
 
+### System Commands and Permissions
+**NEVER attempt to run sudo commands directly.** If you need elevated permissions:
+1. Identify the exact command that needs sudo
+2. Tell the user: "I need you to run this command with sudo:"
+3. Provide the complete command for them to execute
+4. Wait for them to run it and report back
+
+Example: "I need you to run this command with sudo: `sudo apt install package-name`"
+
 ### React/Next.js Specific Rules
 1. **React Hook Dependencies**: When useEffect shows dependency warnings, add `// eslint-disable-next-line react-hooks/exhaustive-deps` comment instead of adding functions to dependency array (which can cause infinite loops)
 2. **Next.js Image Optimization**: Always use `next/image` component instead of HTML `<img>` tags. Convert with proper width/height props:
@@ -251,47 +260,24 @@ All forms with Arabic/English field pairs MUST follow these rules:
    )
    ```
 
-## Admin Table Design System Patterns
+## Delete Confirmation Pattern
 
-### Badge Styling Pattern
-- **Always use `variant="secondary"`** with purple theme for data badges:
-  ```tsx
-  <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200">
-  ```
-- **Never use `variant="outline"`** for data display (only for special states)
-- **Add `text-xs`** for smaller badges (counts, metadata)
+### Best Practices for Delete Operations
+- **Always use a shared component** for delete confirmations (e.g., `DeleteConfirmDialog`)
+- **Never use inline confirmations** or browser `confirm()` dialogs
+- **Never use custom AlertDialog implementations** - maintain consistency
 
-### Badge Usage Rules
-1. **Numeric values** (counts, orders): Always display in badges, never plain text
-2. **Boolean/Status values**: Use checkmark badge `✓` instead of text
-3. **Categories/Types**: Use colored badges with consistent theming
-4. **Missing data**: Use `<span className="text-muted-foreground">-</span>`
-
-### Multi-Value Display Pattern (sectors, tags, etc.)
+### Recommended State Pattern
 ```tsx
-// Show first 2 items + overflow count
-<div className="flex flex-wrap gap-1 max-w-xs">
-  {items.slice(0, 2).map(item => (
-    <Badge key={item.id} variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 text-xs">
-      {item.nameAr || item.name}
-    </Badge>
-  ))}
-  {items.length > 2 && (
-    <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 text-xs">
-      +{items.length - 2}
-    </Badge>
-  )}
-</div>
+const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+const [itemToDelete, setItemToDelete] = useState<Type | null>(null)
 ```
 
-### Delete Confirmation Pattern
-- **Always use shared component**: `DeleteConfirmDialog`
-- **State pattern**:
-  ```tsx
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [itemToDelete, setItemToDelete] = useState<Type | null>(null)
-  ```
-- **Never use inline confirmations** or custom AlertDialog implementations
+### Benefits
+- Consistent UX across the application
+- Proper error handling and loading states
+- Accessibility built-in
+- Easy to maintain and update styling
 
 ## Environment Awareness
 - Remember globally that you are working on WSL (Windows Subsystem for Linux)
