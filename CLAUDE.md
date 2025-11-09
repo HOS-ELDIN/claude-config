@@ -197,6 +197,37 @@ This pattern ensures consistent validation, type safety, and user experience acr
      - Avoids complex prop typing for components
      - Better for performance optimization
 
+12. **ALWAYS use maximum parallel agents for divisible tasks**
+   - When tasks can be divided into independent subtasks, ALWAYS launch multiple agents in parallel
+   - Examples of divisible tasks:
+     - Multiple lint errors across different files
+     - Multiple build/TypeScript errors
+     - Multiple test failures
+     - Multiple file modifications/refactors
+     - Multiple independent bug fixes
+   - **How to launch parallel agents**:
+     - Send a SINGLE message with MULTIPLE Task tool calls
+     - Each agent works independently on a subset of the problem
+     - This dramatically speeds up completion time
+   - **Example**: For 10 lint errors across 5 files:
+     ```
+     Launch 5 agents in parallel (one message with 5 Task calls):
+     - Agent 1: Fix errors in file1.ts
+     - Agent 2: Fix errors in file2.ts
+     - Agent 3: Fix errors in file3.ts
+     - Agent 4: Fix errors in file4.ts
+     - Agent 5: Fix errors in file5.ts
+     ```
+   - **Benefits**:
+     - 5-10x faster completion for large error sets
+     - Efficient use of computational resources
+     - Faster iteration cycles
+     - Better developer experience
+   - **When NOT to parallelize**:
+     - Tasks with dependencies (one must finish before another)
+     - Tasks requiring shared context or coordination
+     - Single-file focused work
+
 ## Arabic/English Field Validation Pattern
 
 ### Critical Rules for Bilingual Fields
