@@ -310,6 +310,46 @@ const [itemToDelete, setItemToDelete] = useState<Type | null>(null)
 - Accessibility built-in
 - Easy to maintain and update styling
 
+## RTL Support for Bilingual/Multilingual Components
+
+**ALWAYS add `dir` prop to directional UI components** in bilingual/multilingual projects:
+
+### Components Requiring dir Prop
+
+**Apply to ROOT component**:
+- `<Tabs dir={dir} ...>`
+- `<Select dir={dir} ...>`
+- `<DropdownMenu dir={dir} ...>`
+- `<Popover dir={dir} ...>`
+
+**Apply to CONTENT component**:
+- `<DialogContent dir={dir} ...>`
+- `<AlertDialogContent dir={dir} ...>`
+
+### Language Detection Pattern
+
+How to get `lang`/`dir` varies by project:
+
+```typescript
+// Pattern 1: Using useRouter (Next.js i18n)
+const router = useRouter();
+const dir = router.locale === "ar" ? "rtl" : "ltr";
+
+// Pattern 2: Using useTranslation (next-i18next)
+import { LanguageCode } from '@/lib/languages';
+const { i18n } = useTranslation();
+const lang = i18n.language as LanguageCode;
+const dir = lang === "ar" ? "rtl" : "ltr";
+
+// Pattern 3: From route params
+const dir = params.lang === "ar" ? "rtl" : "ltr";
+```
+
+### Implementation Notes
+- Detect language using whatever pattern is available in the project (i18n, router, params, etc.)
+- RTL is required for Arabic and other right-to-left languages
+- Ensures proper text direction and UI layout
+
 ## Environment Awareness
 - Remember globally that you are working on WSL (Windows Subsystem for Linux)
 
