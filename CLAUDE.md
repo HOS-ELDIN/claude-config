@@ -9,6 +9,37 @@
 
 Example: "I need you to run this command with sudo: `sudo apt install package-name`"
 
+### Docker Cleanup and Container Management
+**CRITICAL: NEVER run broad Docker cleanup commands that could affect other projects.**
+
+**Strict Rules**:
+1. **NEVER use `docker rm $(docker ps -a -q)` or similar broad removal commands**
+2. **NEVER use `docker ps -a --filter "status=exited" -q | xargs docker rm`** without checking what containers belong to which project
+3. **ALWAYS verify container ownership before deletion** using labels, names, or project-specific filters
+4. **For Docker Swarm services**: Remove the SERVICE, not individual containers
+   - Containers will be recreated by Swarm if you only remove containers
+   - Use `docker service rm <service-name>` instead of `docker rm <container-id>`
+5. **Before any Docker cleanup**:
+   - List what will be affected: `docker ps -a --filter "<specific-filter>"`
+   - Verify containers belong to the intended project
+   - Ask user for confirmation if unsure
+6. **Prefer targeted removal**:
+   ```bash
+   # ✅ GOOD - Specific label filter
+   docker ps -a --filter "label=tarout.app=my-app" -q | xargs docker rm
+
+   # ✅ GOOD - Remove specific service
+   docker service rm service-name
+
+   # ❌ BAD - Broad removal
+   docker ps -a --filter "status=exited" -q | xargs docker rm
+   ```
+
+**Docker Swarm Specific**:
+- Always check if containers are part of a Swarm service: `docker service ls`
+- Remove orphaned services with `docker service rm <service-name>`
+- Use `docker service ps <service-name>` to see all tasks/containers for a service
+
 ### React/Next.js Specific Rules
 1. **React Hook Dependencies**: When useEffect shows dependency warnings, add `// eslint-disable-next-line react-hooks/exhaustive-deps` comment instead of adding functions to dependency array (which can cause infinite loops)
 2. **Next.js Image Optimization**: Always use `next/image` component instead of HTML `<img>` tags. Convert with proper width/height props:
