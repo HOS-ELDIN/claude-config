@@ -46,11 +46,24 @@ Example: "I need you to run this command with sudo: `sudo apt install package-na
    ```tsx
    // Bad
    <img src={url} alt={alt} className="..." />
-   
+
    // Good
    import Image from 'next/image'
    <Image src={url} alt={alt} width={1000} height={1000} className="..." />
    ```
+3. **Numerical Conditional Rendering**: Always use `!!` for numerical values in conditional rendering to explicitly convert to boolean:
+   ```tsx
+   // ✅ CORRECT - Explicit boolean conversion
+   {!!count && count > 0 && <Badge>{count}</Badge>}
+   {!!pendingApprovalsCount && pendingApprovalsCount > 0 && <Component />}
+
+   // ❌ AVOID - 0 is falsy, might cause unexpected behavior
+   {count && count > 0 && <Badge>{count}</Badge>}
+   ```
+   **Why**: `0` is falsy in JavaScript, but `!!0` explicitly evaluates to `false`. This makes boolean conversion explicit and prevents edge cases. Apply this pattern to:
+   - Counts/quantities: `!!itemCount && itemCount > 0`
+   - Numeric IDs: `!!userId && ...`
+   - Numeric values from queries/APIs: `!!pendingCount && pendingCount > 0`
 
 ### Form Implementation Pattern (REQUIRED)
 All forms MUST be implemented using react-hook-form with Zod validation following this exact pattern:
