@@ -382,27 +382,56 @@ const [itemToDelete, setItemToDelete] = useState<Type | null>(null)
 - Button, Input, Textarea (directional via CSS only)
 - ScrollArea (optional - low impact on UX)
 
-### Twkeed Platform Standard (next-intl)
+### Language Detection Patterns
 
-**All services (auth, chat, agent, code, slides) use next-intl:**
+How to get `lang`/`dir` varies by project:
+
+```typescript
+// Pattern 1: Using useRouter (Next.js i18n)
+const router = useRouter();
+const dir = router.locale === "ar" ? "rtl" : "ltr";
+
+// Pattern 2: Using useTranslation (next-i18next)
+import { LanguageCode } from '@/lib/languages';
+const { i18n } = useTranslation();
+const lang = i18n.language as LanguageCode;
+const dir = lang === "ar" ? "rtl" : "ltr";
+
+// Pattern 3: Using next-intl (recommended for new projects)
+import { useLocale } from 'next-intl'
+const locale = useLocale()
+const dir = locale === 'ar' ? 'rtl' : 'ltr'
+
+// Pattern 4: From route params
+const dir = params.lang === "ar" ? "rtl" : "ltr";
+
+// Pattern 5: Custom context
+import { useLanguage } from '@/contexts/LanguageContext'
+const { isArabic } = useLanguage()
+const dir = isArabic ? 'rtl' : 'ltr'
+```
+
+### Auto-Detecting RTL in Components (Optional Pattern)
+
+For projects that want components to auto-detect RTL without manual props:
 
 ```typescript
 // In shadcn/ui components (components/ui/*.tsx)
-import { useLocale } from 'next-intl'
+import { useLocale } from 'next-intl'  // or your i18n hook
 
 // For Root components (Select, Tabs, DropdownMenu, Popover)
 function ComponentName(props: ComponentProps & { dir?: 'ltr' | 'rtl' }) {
   const { dir, ...restProps } = props
-  const locale = useLocale()
+  const locale = useLocale()  // Adjust based on your i18n setup
   const contextDir = locale === 'ar' ? 'rtl' : 'ltr'
-  const resolvedDir = dir ?? contextDir
+  const resolvedDir = dir ?? contextDir  // Allow manual override
 
   return <Primitive.Root dir={resolvedDir} {...restProps} />
 }
 
 // For Content components (DialogContent, AlertDialogContent)
 const ComponentName = React.forwardRef<...>(({ dir, ...props }, ref) => {
-  const locale = useLocale()
+  const locale = useLocale()  // Adjust based on your i18n setup
   const contextDir = locale === 'ar' ? 'rtl' : 'ltr'
   const resolvedDir = dir ?? contextDir
 
@@ -410,45 +439,11 @@ const ComponentName = React.forwardRef<...>(({ dir, ...props }, ref) => {
 })
 ```
 
-**Components are already configured - no manual `dir` prop needed in usage:**
-```typescript
-// ✅ Automatic RTL - components detect locale automatically
-<Select>...</Select>
-<Tabs>...</Tabs>
-<DialogContent>...</DialogContent>
-
-// ✅ Can override if needed
-<Select dir="ltr">...</Select>  // Force LTR for code snippets
-```
-
-### Language Detection Pattern (Legacy Projects)
-
-For projects NOT using next-intl yet:
-
-```typescript
-// Pattern 1: Using next-intl (RECOMMENDED - Twkeed standard)
-import { useLocale } from 'next-intl'
-const locale = useLocale()
-const dir = locale === 'ar' ? 'rtl' : 'ltr'
-
-// Pattern 2: Using useRouter (Next.js i18n)
-const router = useRouter()
-const dir = router.locale === "ar" ? "rtl" : "ltr"
-
-// Pattern 3: Using useTranslation (next-i18next)
-import { LanguageCode } from '@/lib/languages'
-const { i18n } = useTranslation()
-const lang = i18n.language as LanguageCode
-const dir = lang === "ar" ? "rtl" : "ltr"
-
-// Pattern 4: From route params
-const dir = params.lang === "ar" ? "rtl" : "ltr"
-```
-
 ### Implementation Notes
-- **Twkeed Platform**: All services configured with next-intl - components auto-detect RTL
-- **New Projects**: Set up next-intl from the start to avoid future refactoring
-- **Landing Service**: Uses custom LanguageContext (will migrate to next-intl in future)
+- Detect language using whatever pattern is available in the project (i18n, router, params, context, etc.)
+- RTL is required for Arabic and other right-to-left languages
+- Ensures proper text direction and UI layout
+- Components can auto-detect RTL (optional pattern above) or require explicit `dir` prop
 - **RTL Languages**: Arabic (`ar`), Hebrew (`he`), Persian (`fa`), Urdu (`ur`)
 - **Always test**: Dropdown positioning, dialog centering, tab navigation with keyboard
 
