@@ -40,6 +40,17 @@ Example: "I need you to run this command with sudo: `sudo apt install package-na
 - Remove orphaned services with `docker service rm <service-name>`
 - Use `docker service ps <service-name>` to see all tasks/containers for a service
 
+### Git Commit Policy
+**NEVER create git commits on your own initiative.** Git commits should ONLY be made when explicitly requested by the user.
+
+**Rules**:
+1. **DO NOT commit changes** unless the user explicitly asks you to commit
+2. **DO NOT use git commit** in any automated workflow or task completion
+3. **ALWAYS ask the user** before creating commits: "Would you like me to commit these changes?"
+4. **Exception**: Only commit if the user says "commit this" or "create a commit" or similar explicit instruction
+
+**Why**: Users want full control over their git history. Automatic commits are intrusive and unwanted.
+
 ### React/Next.js Specific Rules
 1. **React Hook Dependencies**: When useEffect shows dependency warnings, add `// eslint-disable-next-line react-hooks/exhaustive-deps` comment instead of adding functions to dependency array (which can cause infinite loops)
 2. **Next.js Image Optimization**: Always use `next/image` component instead of HTML `<img>` tags. Convert with proper width/height props:
